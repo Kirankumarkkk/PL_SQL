@@ -1,0 +1,89 @@
+PL SQL : Bro code
+====================
+
+CREATE DATABASE myDB;  -create database
+
+USE myDB;      -to use db
+
+DROP DATABASE myDB;   -to delete database
+
+ALTER DATBASE myDB READ ONLY=1;   -to make db readonly
+
+ALTER DATBASE myDB READ ONLY=1;   -to make db not readonly
+
+
+CREATE TABLE employees ( employee_id INT UNIQUE, first_name VARCHAR(50) , last_name VARCHAR (50) NOT NULL, hourly_pay DECIMAL(5,2), hire_date DATE/DATETIME/TIME);   -to create a table unique data/unique constraint
+
+
+RENAME TABLE employees TO workers;   -to rename a table
+
+DROP TABLE employees;   -to delete a table
+
+ALTER TABLE employees ADD phone_number VARCHAR(15); -to add one more cloumn to the table
+
+ALTER TABLE employees RENAME COLUMN phone_number to email; -to rename a column
+
+ALTER TABLE employees MODIFY COLUMN email VARCHAR(100); -to modify datatype for the column
+
+ALTER TABLE employees MODIFY COLUMN email VARCHAR(100) AFTER last_name; -to move column after last_name 
+
+ALTER TABLE employees MODIFY COLUMN email VARCHAR(100) FIRST; -to move column to first column
+
+ALTER TABELE employees DROP COLUMN email; -to delete a column from the table
+
+INSERT INTO employees values(1,"kiran","kumar",10.50,"2023-01-02"),(2,"manoj","kumar",20.10,"2024-02-20");  -to insert data into employees table
+
+ 
+INSERT INTO employees (columnname1,coloumname2,column_date,column_time,column_dateteime) values(value1,value2,CURRENT_DATE(),CURRENT_TIME(), NOW());  -to insert data into employees table. current_date()+1 tomorrow date , null also we set data
+
+select * from employees;    -to select a table
+
+select columnname1,columnname2 from employes where hire_date<="2023-01-01" ;  -where clause != not equal to / less than or equal to / is null / is not null
+
+UPDATE TABLE employees SET hourly_pay=10.25,hire_date=NULL where employee_id=6 -update a column value using where clause 
+
+DELETE FROM employees where employee_id=6; -to delete a row from a table
+
+SET AUTOCOMMIT=OFF -to autocommit off COMMIT; -to commit query ROLLBACK; -to roll back to previous query
+
+ALTER TABLE employees ADD CONSTRAINT UNIQUE(employeeid); -incase forgot to add unique constraint to the column
+
+ALTER TABLE employees MODIFY price DECIMAL (4,2) NOT NULL; -incase forgot to add NOT NULL constraint
+
+create table employees( employeeid INT PRIMARY KEY AUTO_INCREMENT,hourly_pay VARCHAR(5,2) DEFAULT 0,transaction_date DATETIME DEFAULT NOW(), CONSTRAINT chk_hourly_pay CHECK (hourly_pay >=10)) ;   -to add CHECK constraint to check the data and DEFAULT CONSTRAINT 0 or NOW() current date&time and PRIMARY KEY no duplicate with AUTO_INCREMENT this will increment 1+ each time
+
+ALTER TABLE employees ADD CONSTRAINT chk_hourly_pay CHECK ( hourly_pay >= 10.00) ;  -to add check constraint after creating table
+
+ALTER TABLE employees DROP CHECK chk_hourly_pay; -to delete a CHECK constraint
+
+ALTER TABLE employees ALTER price SET DEFAULT 0;  -to add default value to price column
+
+ALTER TABLE employees ADD CONSTRAINT PRIMARY KEY(transactionid); -to add a primary key to the column
+
+ALTER TABLE EMPLOYEES AUTO_INCREMENT=1000; -to set value to increment
+
+CREATE TABLE TRANSACTIONS (transcationid INT PRIMARY KEY AUTO_INCREMENT, CUSTOMERID INT FOREIGN KEY(customerid) REFERENCES customers(customerid)) ;   -adding a foreign key to connect another table as relationship
+
+ALTER TABLE TRANSACTIONS ADD CONSTRAINT fk_customer_id FOREIGN KEY(customerid) REFERENCES customers(customerid); -to add a foreign key after table created
+
+ALTER TABLE transactions DROP FOREIGN KEY transactions_ibfk_1; -to delete a foreign key
+
+select count(amount) as count_amount_rows from transactions; -count of rows amount as alias to rename and MAX() or MIN() or AVG() or SUM() or CONCAT(first_name,last_name) as full name adding 2 columns in single function
+
+select * from transactions INNER JOIN customers ON transactions.customerid=customers.customer_id ;  -INNER JOIN matching rows data only
+
+select * from transactions LEFT JOIN customers ON transactions.customerid=customers.customer_id ;  -LEFT JOIN matching rows data only
+
+select * from transactions RIGHT JOIN customers ON transactions.customerid=customers.customer_id ;  -RIGHT JOIN matching rows data only
+
+select * from employes where NOT job="manager" AND NOT job="asst.manager" AND hire_date BETWEEN "2023-01-04" and "2023-03-07" and firstname LIKE "kir%" or "%r" or "_iran"; -AND OR NOT IN  BETWEEN 2 days operators and LIKE % or ki_an wildcards clause
+
+select * from employees ORDER BY last_name DESC, customerid LIMIT 1,1;  -order by last name,customerid  ASC no need by default it will take ASC and LIMIT 1,1 OFFSET LIMITNUMBER,2
+
+SELECT FIRSTNAME,LASTNAME FROM EMPLOYEES UNION /UNION ALL SELECT FIRSTNAME,LASTNAME FROM CUSTOMERS -union bring all data from 2 table without duplicates, union all bring duplicate data also
+
+
+
+
+
+
