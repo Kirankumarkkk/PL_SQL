@@ -62,7 +62,7 @@ ALTER TABLE employees ADD CONSTRAINT PRIMARY KEY(transactionid); -to add a prima
 
 ALTER TABLE EMPLOYEES AUTO_INCREMENT=1000; -to set value to increment
 
-CREATE TABLE TRANSACTIONS (transcationid INT PRIMARY KEY AUTO_INCREMENT, CUSTOMERID INT FOREIGN KEY(customerid) REFERENCES customers(customerid)) ;   -adding a foreign key to connect another table as relationship
+CREATE TABLE TRANSACTIONS (transcationid INT PRIMARY KEY AUTO_INCREMENT, CUSTOMERID INT FOREIGN KEY(customerid) REFERENCES customers(customerid) ON DELETE SET NULL / CASCADE) ;   -adding a foreign key to connect another table as relationship , on delete set to NULL or DELETE row
 
 ALTER TABLE TRANSACTIONS ADD CONSTRAINT fk_customer_id FOREIGN KEY(customerid) REFERENCES customers(customerid); -to add a foreign key after table created
 
@@ -80,10 +80,110 @@ select * from employes where NOT job="manager" AND NOT job="asst.manager" AND hi
 
 select * from employees ORDER BY last_name DESC, customerid LIMIT 1,1;  -order by last name,customerid  ASC no need by default it will take ASC and LIMIT 1,1 OFFSET LIMITNUMBER,2
 
-SELECT FIRSTNAME,LASTNAME FROM EMPLOYEES UNION /UNION ALL SELECT FIRSTNAME,LASTNAME FROM CUSTOMERS -union bring all data from 2 table without duplicates, union all bring duplicate data also
+SELECT firstname,lastname FROM employees UNION /UNION ALL SELECT firstname,lastname FROM customers -union bring all data from 2 table without duplicates, union all bring duplicate data also
+
+select * from customers AS a INNER JOIN customers AS b ON a.referralid=b.customerid   -self join same table
+
+CREATE VIEW employee_fullname AS select firstname,lastname from employees -creating view & if we update any data of those columns view also gets updated
+
+DROP VIEW employee_fullname; -to delete view
+
+SHOW INDEXES FROM customers; -to see existing indexes to the table
+
+CREATE INDEX last_name_firstname_idx ON customers(lastname,firstname) -to create a new index it will to search for a record less time and update takes more time
+
+ALTER TABLE customers DROP INDEX last_name_index; -to delete a index
+
+select DISTINCT firstname,lastname,(select AVG(hourly_pay) from employees) AS AVG_pay from employees; -adding subquery to fetch the data, adding distinct to  s column
+
+select sum(amount),order_date from transactions GROUP BY order_Date HAVING COUNT(amount) > 1 and HAVING amount is not null;   -group by where clause HAVING we need to use
+
+select sum(amount),order_date from transactions GROUP BY order_Date WITH ROLLUP ; -rollup will total of the amount extension of group by
+
+-ON DELETE SET NULL when FK is deleted, replace FK with NULL
+-ON DELETE CASCADE when a FK is deleted, delete row
+
+SET foreign_key_checks=0; -to set 0 when deleting a row
+
+ALTER TABLE transactions DROP FOREIGN KEY fk_customer_id; -to delete a foreign key
+
+ALTER TABLE transaction ADD CONSTRAINT fk_customer_id FOREIGN KEY(customer_id) REFERENCES customers(customerid) ON DELETE SET NULL ; -add ON DELETE SET NULL / CASCADE ADD constraint to the column
+
+===============================
+STORED PROCEDURES :
+===============================
+
+DELIMITER $$ or //      -to create a procedure
+CREATE PROCEDURE get_customers(IN id INT, IN fname VARCHAR(50))
+BEGIN
+	SELECT * FROM CUSTOMERS where customer_id=id;
+END $$ or //
+DELIMITER;
+
+CALL get_customers(2,"kiran");    -to call a procedure
+
+DROP PROCEDURE get_customers();  -to delete a procedure
 
 
+===============================
+TRIGGERS :
+===============================
+
+- when event happens do something eg, INSERT,UPDATE,DELETE  check data, handle errors, auditing tables
+
+UPDATE BEFORE TRIGGER:
+-----------------------
+
+CREATE TRIGGER before_hourly_pay_update
+BEFORE UPDATE ON employees
+FOR EACH ROW
+SET NEW.salary=(NEW.hourlypay*2080);   -update salary TRIGGER created to update before on UPDATE
+
+SHOW TRIGGERS;     -to see triggers
 
 
+INSERT BEFORE TRIGGER:
+--------------------------
+
+CREATE TRIGGER before_hourly_pay_insert
+BEFORE INSERT ON employees
+FOR EACH ROW
+SET NEW.salary=(NEW.hourlypay*2080);   -update salary TRIGGER created to update before on INSERT
+
+UPDATE EXPENSES ANOTHER TABLE:
+-------------------------------
+
+UPDATE expenses
+SET expense_total= (select sum(salary) from employes) where expense_name="salaries". -to update salary from employees table
 
 
+DELETE AFTER TRIGGER another table;
+-----------------------------------------
+
+CREATE TRIGGER before_hourly_pay_delete
+AFTER DELETE ON employees
+FOR EACH ROW
+UPDATE expenses
+SET expense_total=expense_total - OLD.salary
+WHERE expense_name="salaries";
+
+INSERT AFTER TRIGGER ANOTHER TABLE:
+--------------------------------------
+
+CREATE TRIGGER after_salary_insert
+AFTER INSERT ON employees
+FOR EACH ROW
+UPDATE expenses
+SET expense_total=expense_total + NEW.salary
+WHERE expense_name="salaries";
+
+
+UPDATE AFTER TRIGGER ANOTHER TABLE:
+--------------------------------------
+
+CREATE TRIGGER after_salary_update
+AFTER INSERT ON employees
+FOR EACH ROW
+UPDATE expenses
+SET expense_total= expense_total + (NEW.salary - OLD.salary)
+where expense_name="salaries"
