@@ -190,19 +190,238 @@ where expense_name="salaries"
 
 ==========================================================================
 
+PL/ SQL - procedural language / Structured query language 
+-------------------------------------------------------------
 
--Hello world program
+Delimeter :
+----------
+
+Delimeter/symbol             description
+
++,-,*,/                    all arithmetic operators
+'			   character string delimeter
+--		           single line comment
+=> 			   association operation
+;			   statement terminator
+:=			   assignment operator
+||			   concatenation operator
+>,<,>=,<=,=		   relational operator
+/*   */		           multi-line operator	
+
+miscellaneous synonyms/delimeters
+
+Delimeter/symbol             description
+
+--			 single line comment indicator
+:    			 host variable indicator
+..			 range operator
+<>,'=,`=,^=      	 different versions of not equal
+%			 attribute indicator
+.			 component selector
+(,)			 expression or list delimiter
+,			 item separator
+@			 remote access indicator
+
+Data types:
+-----------
+
+scalar : NUMBER,DATE,BOOLEAN,CHAR,VARCHAR,VARCHAR2,DATE,YEAR,MONTH,DAY,HOUR,MINUTE,SECOND,TRUE,FALSE,RAW,NCHAR,NVARCHAR2,LONG,LONG RAW,ROWID,UROWID
+large object (LOB) : BFILE,BLOB,CLOB,NCLOB    -to store large object data like text, graphic images/video clips and sound waveforms
+composite : data items that have internal components that can be accessed individually	for eg : collections and records			
+comparison operators:
 ---------------------
 
-set SERVEROUTPUT ON  -to enable output
-declare
+LIKE - like operator
+BETWEEN - range operator
+IN - in operator
+IS NULL - null comparator operator
 
-myVar1 number;           -initailize values
-myVar2 number:=123;
+procedure syntax:
+------------------
+
+CREATE [OR REPLACE] PROCEDURE procedure_name
+[(parameter_name[IN | OUT | IN OUT] DataType[,..])]
+{IS | AS }
+BEGIN
+ <procedure_body>
+END;
+
+eg :
+
+--to call below preocedure
 
 BEGIN
+myfirst;
+end;
 
-DBMS_OUTPUT.PUT_LINE('MY HELLO WORLD PROGRAM' || myVar2);  -concat || myVar2 variable
+--to create a procedure
+
+create or replace PROCEDURE myfirst
+is
+vari number;
+begin
+	var1:=1;
+	dbms_output.put_line('hey' || vari);
+end;
+
+Note :
+------
+1.procedure never return any value
+2.it will be get store in database
+3.at every call procedure does not compile 
+
+Function syntax:
+-----------------
+
+CREATE [OR REPLACE] FUNCTION function_name
+[(parameter_name[IN|OUT|IN OUT] type [,..])]
+RETURN return_datatype
+{IS|AS}
+BEGIN
+	<function_body>
+END [function_name];
+
+
+
+Hello world program and declaring variables
+----------------------------------------------
+
+set SERVEROUTPUT ON  -to enable output
+
+DECLARE
+  message varchar2(100):= 'Hello, World! ';   --declare variables
+  myvar1 number:=123;
+  myvar2 number:=1;
+  myvar3 number;
+  myvar4 varchar2(50);
+  myvar5 date;
+  myvar6 char(10);
+  myvar7 BOOLEAN:=true;
+  myvar10 BOOLEAN:=true;
+  myvar11 BOOLEAN:=false;
+  myvar8 number;
+  myvar9 number;
+  
+BEGIN 
+  
+  myvar3:=myvar1+myvar2;
+  myvar4:='hello varchar 50';
+  myvar5:=to_date(sysdate,'DD-MM-YYYY');
+  myvar6:='hey1';
+  myvar8:=1+8;
+  myvar9:=5;
+
+  dbms_output.put_line(message || myvar3); 
+  dbms_output.put_line(message || myvar4);
+  dbms_output.put_line(message || myvar5);
+  dbms_output.put_line(message || myvar6);
+  dbms_output.put_line(message || myvar8);
+  dbms_output.put_line(message || myvar9**2);
+
+--if and or block
+
+  if ((myvar7 and myvar10) or myvar11)
+  then
+	  dbms_output.put_line('i am in if block and or');
+  end if;
+
+--if not block
+
+  if(not myvar11)
+  then
+  dbms_output.put_line('i am in if not block');
+  end if;
+
+   select employeeid,name into myvar1,fullname from employees where employeeid is not null and employeename like 'SMITH%' and hiredate between to_date('16-DEC-1960','DD-MM-YYYY') and to_date('16-JAN-1981','DD-MM-YYYY) ;    --employeeid and myvar1 should be same datatype into query
+
+   
+
+END;
+/
+
+find minimum number procedure:
+------------------------------
+
+--create procedure to find minimum 
+
+create or replace procedure findmini(x IN NUMBER, y IN NUMBER , z OUT NUMBER) 
+IS
+--to declare any variables
+BEGIN
+	IF x < y then
+	z:=x;
+	ELSE
+	z:=y;
+	END IF;
+END;
+
+--to call procedure
+
+declare 
+	a number;
+	b number;
+	c number;
+begin
+	a:=1;
+	b:=2;
+	findmini(a,b,c);
+end;
+/
+	
+update salary for a employee :
+-------------------------------
+
+--creating procedure for updating salary
+
+create or replace procedure updatesalary(empid IN NUMBER,percentage IN NUMBER,newsalary OUT NUMBER)
+IS mysalary number;
+   incamt number;
+BEGIN
+	SELECT salary into mysalary 
+	from employees where employeeid=empid;
+	inctamt:=(mysalary*percentage)/100;
+	mysalary:=incamt+mysalary;
+	
+	update employees set salary =mysalary where employeeid=empid;
+	newsalary:=mysalary;
+
+end;
+/
+
+--to call procedure
+
+declare 
+	a number;
+	b number;
+	c number;
+begin
+	a:=10;
+	b:=10;
+	updatesalary(a,b,c);
+end;
+/
+
+--to delete a procedure
+
+DROP PROCEDURE updatesalary;
+
+
+create function to return number :
+-----------------------------------
+
+--creating function
+
+create or replace function my_fun
+return number 
+is
+
+total number(10,2) :=0 ;
+
+begin
+
+select sum(salary) int total from employees;
+
+return total;
 
 end;
 /
