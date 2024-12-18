@@ -1,0 +1,32 @@
+DECLARE
+  message varchar2(100):= 'Hello, World! '; 
+  myvar1 number:=123;
+  myvar2 number:=1;
+  myvar3 number;
+  myvar4 varchar2(50);
+  myvar5 date;
+  myvar6 char(10);
+  myvar7 BOOLEAN:=true;
+  myvar8 number;
+  myvar9 BOOLEAN:=true;
+  myvar10 BOOLEAN:=false;
+BEGIN 
+  
+  myvar3:=myvar1+myvar2;
+  myvar4:='hello varchar 50';
+  myvar5:=to_date(sysdate,'DD-MM-YYYY');
+  myvar6:='hey1';
+  myvar8:=5;
+  dbms_output.put_line(message || myvar3); 
+  dbms_output.put_line(message || myvar4);
+  dbms_output.put_line(message || myvar5);
+  dbms_output.put_line(message || myvar6);
+  dbms_output.put_line(message || myvar8**2); 
+
+  if((myvar7 and myvar9) or myvar10)
+  then
+  dbms_output.put_line('i am in if block and or block');
+  end if;
+
+END;
+/
