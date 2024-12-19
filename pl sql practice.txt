@@ -10,6 +10,13 @@ DECLARE
   myvar8 number;
   myvar9 BOOLEAN:=true;
   myvar10 BOOLEAN:=false;
+  xvar number:=1;
+  yvar number:=2;
+  zvar number;
+  myempvar number:=20020;
+  mybasicloopvar number:=0;
+  myforloopvar number:=0;
+  mywhileloopvar number:=0;
 BEGIN 
   
   myvar3:=myvar1+myvar2;
@@ -27,6 +34,62 @@ BEGIN
   then
   dbms_output.put_line('i am in if block and or block');
   end if;
+  
+  if(not myvar10)
+  then
+  dbms_output.put_line('i am in if not block');
+  end if;
+  
+  if xvar > yvar 
+  then
+  zvar:=xvar;
+  else
+  zvar:=yvar;
+  dbms_output.put_line(zvar || ' ' || 'end if else');
+  end if;
+  
+  if(myempvar>2000) then
+  dbms_output.put_line('myempvar is greater than 2000 ' || myempvar);
+  elsif (myempvar>2000) then
+  dbms_output.put_line('myempvar is greater than 3000' || myempvar);
+  else
+    dbms_output.put_line('else condition' || myempvar);
+  end if;
+  
+  --basic loop
+
+  LOOP
+   IF (mybasicloopvar>10) then
+        dbms_output.put_line('exit loop print one time ' || mybasicloopvar);
+        exit;
+   END IF;
+           mybasicloopvar:=mybasicloopvar+5;
+           dbms_output.put_line('INSIDE LOOP' || mybasicloopvar);
+  END LOOP;
+     dbms_output.put_line('i am out of the loop '|| mybasicloopvar);
+     
+  --for loop  1 to 3 looping
+  
+  for myforloopvar in 1..3
+   Loop
+          dbms_output.put_line('i am inside for loop '|| myforloopvar);
+     end loop;
+     dbms_output.put_line('i am out of the for loop'|| myforloopvar);
+     
+  --while loop   
+
+   while(mywhileloopvar<10)
+   Loop
+          dbms_output.put_line('i am inside while loop '|| mywhileloopvar);
+              mywhileloopvar:=mywhileloopvar+5; 
+     end loop;
+     dbms_output.put_line('i am out of the while loop'|| mywhileloopvar);
+
+  
+  
+
+  
+
 
 END;
 /

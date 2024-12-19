@@ -281,7 +281,124 @@ BEGIN
 	<function_body>
 END [function_name];
 
+difference between procedures and functions:
+--------------------------------------------
 
+function
+----------
+.DML statements cannot be executed within a function
+.A function an be called within a query
+.A function has no support for try-catch
+.A select statement can have a function call
+.A function can be called by a procedure
+.Whenever a function is called every time it get compiled before being called
+.A function returns a value and control to calling function or code
+.A function can not have explicit transaction handling
+
+procedure
+------------
+.DML statements can be executed within a procedure
+.A procedure cannot be called within a query
+.A procedure has support for try-catch blocks
+.A select statement can't have a procedure call
+.A procedure cannot be called by a function
+.A procedure is compiled once and can be called multiple times without being compiled
+.A procedure returns the control but not any value to calling function or code
+.A procedure an use explicit transaction handling
+
+IF and IF-ELSE and IF-ELSE IF and IF-ELSE-IF-ELSE statement only syntax:
+--------------------------------------------------------------------------
+
+--nested if we can do if conditions
+
+IF(condition) THEN
+END IF;
+
+IF(condition) THEN
+ELSE
+END IF;
+
+IF(condition) THEN
+ELSIF(condition) THEN
+END IF;
+
+IF(condition) THEN
+ELSIF(condition) THEN
+ELSE
+END IF;
+
+IF(condition) THEN
+	IF(condition) THEN
+	END IF;
+ELSIF(condition) THEN
+ELSE
+END IF;
+
+Types of loop :
+----------------
+
+1. basic loop :
+---------------
+
+LOOP 
+ if Exit condition THEN
+ exit;
+ end if;
+END LOOP;
+
+2. for loop :
+--------------
+
+FOR variablename IN Range(1..10)
+LOOP
+
+END loop;
+
+3. while loop:
+---------------
+while Exit Condition
+LOOP
+
+END LOOP;
+
+cursor : it helps to fetch multiple rows data
+--------
+
+cursor writing steps:
+--------------------
+1.declare cursor
+2.open cursor
+3.fetch cursor
+4.close the cursor
+
+cursor syntax:
+---------------
+Declare 
+	CURSOR cursorname IS select query;
+begin
+	OPEN cursorname;
+	FETCH cursorname INTO variablename;
+	close the cursorname;
+end;
+
+Attributes of cursor:
+----------------------
+
+%FOUND
+%NOTFOUND
+%ISOPEN
+%ROWACOUNT
+
+
+
+1.explicit cursor: parameterized cursor (parameter value) and non-parameterized cursor (without parameter value)
+
+2.implicit cursor : inbuild cursor , by default exit in pl sql 
+
+
+
+Procedures:
+=============
 
 Hello world program and declaring variables
 ----------------------------------------------
@@ -419,9 +536,228 @@ total number(10,2) :=0 ;
 
 begin
 
-select sum(salary) int total from employees;
+select sum(salary) into total from employees;
 
 return total;
 
 end;
 /
+
+--calling function using procedure with block statement below
+
+set serveroutput on
+
+declare 
+	c number(10,2);
+begin
+	c:=myfun;
+
+end;
+/
+
+--creating function and passing parameter 
+
+CREATE OR REPLACE FUNCTION mysum (empid IN number)
+RETURN number IS
+	total number(10):=0;
+BEGIN
+	SELECT salary into total
+	FROM employees where empployeeid=empid;
+	RETURN total;
+END;
+/
+
+--calling function using procedure 
+
+DECLARE 
+	c number(10,2);
+	empid number(10):=7369;
+BEGIN
+	c:=mysum(empid);
+END;
+/
+
+--to delete a function use below command
+
+drop function mysum;
+
+IF conditions statements only procedure :
+------------------------------------------------
+
+--creating a procedure using if condition
+
+create or replace procedure myempproc(empid IN number)
+IS
+	empsalary number(7,2):=0;
+	incsalary number(7,2):=0;
+        myempvar number:=20020;
+BEGIN
+	select salary into empsalary
+	from employees_bk where employeeid=empid;
+	
+        if(empsalary > 2000) then
+	dbms_output.putline('your salary greater then 2000:' || empsalary);
+	end if;
+
+  if(myempvar>2000) then
+  dbms_output.put_line('myempvar is greater than 2000 ' || myempvar);
+  elsif (myempvar>2000) then
+  dbms_output.put_line('myempvar is greater than 3000' || myempvar);
+  else
+    dbms_output.put_line('else condition' || myempvar);
+  end if;
+
+END;
+
+
+--calling above procedure passing empid in the parameter
+
+set serveroutput on
+begin
+	myempproc(7369);
+end;
+
+lOOP procedures:
+--------------------
+ 
+basic loop procedure below and calling
+--------------------------------------
+
+set serveroutput on
+DECLARE
+  var1 number:=0;
+BEGIN
+   Loop
+     if(var1>10) then
+          dbms_output.put_line('exit loop'|| var1);
+	exit;
+     end if;
+     dbms_output.put_line('i am basic loop'|| var1);
+     var1:=var1+1; 
+     end loop;
+     dbms_output.put_line('i am out of the loop'|| var1);
+
+end;
+/
+
+for loop procedure using below code
+-----------------------------------
+
+set serveroutput on
+DECLARE
+  var1 number:=0;
+BEGIN
+
+   for var1 in 1..5
+   Loop
+          dbms_output.put_line('i am inside loop '|| var1);
+     end loop;
+     dbms_output.put_line('i am out of the loop'|| var1);
+
+end;
+/
+
+while loop procedure using below code
+---------------------------------------
+
+set serveroutput on
+DECLARE
+  var1 number:=0;
+BEGIN
+
+   while(var1<10)
+   Loop
+          dbms_output.put_line('i am inside loop '|| var1);
+              var1:=var1+1; 
+     end loop;
+     dbms_output.put_line('i am out of the loop'|| var1);
+
+end;
+/
+
+
+cursor procedure without parameter:
+-------------------------------
+
+--creating procedure
+
+set serveroutput on
+create or replace procedure printemployeerec
+IS
+  empid number(4):=0;
+  empsalary employees.salary%type;  --declareing  empsalary to employees table salary column same data type
+  emprec employees%ROW;  --emprec holds entire row and ROW data type 
+  CURSOR emp_cursor is select employeeid,salary from employees   
+
+BEGIN
+
+ open emp_cursor;
+
+    LOOP
+       FETCH emp_cursor into empid,empsalary;
+       EXIT WHEN emp_cursor%not found
+       dbms_output.put_line('loop cursor'||empid|| empsalary);
+     end loop;
+
+close emp_cursor;
+
+       dbms_output.put_line('end of the program');
+
+
+end;
+/
+
+--calling procedure without parameter
+
+begin
+printemployeerec();
+end;
+
+
+
+cursor procedure with parameter:
+-------------------------------
+
+--creating procedure
+
+set serveroutput on
+create or replace procedure printemployeerec(depid number)
+IS
+  empid number(4):=0;
+  empsalary employees.salary%type;  --declareing  empsalary to employees table salary column same data type
+  emprec employees%ROW;  --emprec holds entire row and ROW data type 
+  CURSOR emp_cursor is select employeeid,salary from employees where DEPARTMENT_ID=depid;   
+
+BEGIN
+
+ open emp_cursor;
+
+if(emp_cursor%isopen) then
+
+       dbms_output.put_line('cursor is open');
+
+end if;
+
+    LOOP
+       FETCH emp_cursor into empid,empsalary;
+       EXIT WHEN emp_cursor%not found
+       dbms_output.put_line('loop cursor'||empid|| empsalary);
+     end loop;
+
+close emp_cursor;
+
+       dbms_output.put_line('end of the program');
+       dbms_output.put_line('end of the program'|| emp_cursor%rowCount);
+
+
+
+end;
+/
+
+--calling procedure with parameter
+
+begin
+printemployeerec(10);
+end;
+
+
